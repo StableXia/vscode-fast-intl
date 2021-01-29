@@ -1,16 +1,16 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
 import { CHINESE_CHAR_REGEXP } from "./constants";
-import { removeFileComment } from "./utils";
+import { removeFileComment, trimWhiteSpace } from "./utils";
 
 export function findTextInTs(code: string, fileName: string) {
+  const matches: any[] = [];
   const activeEditor = vscode.window.activeTextEditor as vscode.TextEditor;
 
   if (!activeEditor) {
-    return;
+    return matches;
   }
 
-  const matches: any[] = [];
   const ast = ts.createSourceFile(
     "",
     code,
@@ -72,14 +72,55 @@ export function findTextInTs(code: string, fileName: string) {
 
         break;
       }
+
+      case ts.SyntaxKind.TemplateExpression: {
+        const { pos, end } = node;
+        let templateContent = code.slice(pos, end);
+        templateContent = templateContent
+          .toString()
+          .replace(/\$\{[^\}]+\}/, "");
+        if (templateContent.match(CHINESE_CHAR_REGEXP)) {
+          const start = node.getStart();
+          const end = node.getEnd();
+          /** 加一，减一的原因是，去除`号 */
+          const startPos = activeEditor.document.positionAt(start + 1);
+          const endPos = activeEditor.document.positionAt(end - 1);
+          const range = new vscode.Range(startPos, endPos);
+          matches.push({
+            range,
+            text: code.slice(start + 1, end - 1),
+            isString: true,
+          });
+        }
+        break;
+      }
+
+      case ts.SyntaxKind.NoSubstitutionTemplateLiteral: {
+        const { pos, end } = node;
+        let templateContent = code.slice(pos, end);
+        templateContent = templateContent
+          .toString()
+          .replace(/\$\{[^\}]+\}/, "");
+        if (templateContent.match(CHINESE_CHAR_REGEXP)) {
+          const start = node.getStart();
+          const end = node.getEnd();
+          /** 加一，减一的原因是，去除`号 */
+          const startPos = activeEditor.document.positionAt(start + 1);
+          const endPos = activeEditor.document.positionAt(end - 1);
+          const range = new vscode.Range(startPos, endPos);
+          matches.push({
+            range,
+            text: code.slice(start + 1, end - 1),
+            isString: true,
+          });
+        }
+      }
     }
 
     ts.forEachChild(node, visit);
   }
 
   ts.forEachChild(ast, visit);
-
-  console.log("matches", matches);
 
   return matches;
 }

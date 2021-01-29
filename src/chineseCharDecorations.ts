@@ -4,7 +4,7 @@ import { findChineseText } from "./findChineseText";
 let timeout: NodeJS.Timeout;
 let prevChineseCharDecoration: vscode.TextEditorDecorationType;
 
-export function triggerUpdateDecorations(callback: () => void) {
+export function triggerUpdateDecorations(callback: (payload: any) => void) {
   if (timeout) {
     clearTimeout(timeout);
   }
@@ -16,8 +16,9 @@ export function triggerUpdateDecorations(callback: () => void) {
         activeEditor.setDecorations(prevChineseCharDecoration, []);
     }
 
-    updateDecorations();
-    callback();
+    const { targetStrs, chineseCharDecoration } = updateDecorations() || {};
+    // prevChineseCharDecoration = chineseCharDecoration;
+    callback(targetStrs);
   }, 500);
 }
 
@@ -33,5 +34,14 @@ export function updateDecorations() {
   let targetStrs = [];
   let chineseChars: vscode.DecorationOptions[] = [];
 
-  findChineseText(text, currentFilename as string);
+  targetStrs = findChineseText(text, currentFilename as string);
+  targetStrs.map((match) => {
+    const decoration = {
+      range: match.range,
+      hoverMessage: `检测到中文文案： ${match.text}`,
+    };
+    chineseChars.push(decoration);
+  });
+
+  return { targetStrs, chineseCharDecoration: {} };
 }

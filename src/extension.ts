@@ -3,6 +3,7 @@ import { ITargetStr } from "./types";
 import { triggerUpdateDecorations } from "./chineseCharDecorations";
 
 export function activate(context: vscode.ExtensionContext) {
+  console.log(vscode?.workspace?.workspaceFolders?.[0].uri.path);
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
@@ -18,7 +19,9 @@ export function activate(context: vscode.ExtensionContext) {
   let activeEditor = vscode.window.activeTextEditor;
 
   if (activeEditor) {
-    triggerUpdateDecorations(() => {});
+    triggerUpdateDecorations((newTargetStrs) => {
+      targetStrs = newTargetStrs;
+    });
   }
 
   context.subscriptions.push(
@@ -35,17 +38,24 @@ export function activate(context: vscode.ExtensionContext) {
             (t) => range.intersection(t.range) !== undefined
           );
 
-          return [
-            {
-              title: "111",
-              command: "vscode-fast-intl.extractI18N",
-              arguments: [
-                {
-                  targets: "21",
-                },
-              ],
-            },
-          ];
+          if (targetStr) {
+            const sameTextStrs = targetStrs.filter(
+              (t) => t.text === targetStr.text
+            );
+
+            console.log(sameTextStrs);
+            return [
+              {
+                title: "111",
+                command: "vscode-fast-intl.extractI18N",
+                arguments: [
+                  {
+                    targets: "21",
+                  },
+                ],
+              },
+            ];
+          }
         },
       }
     )
