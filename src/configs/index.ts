@@ -6,26 +6,30 @@ import * as path from "path";
  * 获取 fast-intl 配置文件
  */
 export function getFastIntlConfigFile() {
-  const fastIntlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/fast-intl.config.ts`;
+  const fastIntlConfigFilePath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/fast-intl.config.ts`;
 
-  if (!fs.existsSync(fastIntlConfigJson)) {
+  if (!fs.existsSync(fastIntlConfigFilePath)) {
     return null;
+  }
+
+  let fastIntlConfigJson = null;
+
+  try {
+    fastIntlConfigJson = require(fastIntlConfigFilePath);
+  } catch (err) {
+    console.log(err);
   }
 
   return fastIntlConfigJson;
 }
 
 export function getTargetLangPath() {
-  const configFilePath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/fast-intl.config.ts`;
   let targetLangPath = "";
 
-  try {
-    if (fs.existsSync(configFilePath)) {
-      const configFile = require(configFilePath);
-      targetLangPath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/${configFile.fastIntlDir}/zh-cn.json`;
-    }
-  } catch (err) {
-    console.log(err);
+  const configFile = getFastIntlConfigFile();
+
+  if (configFile) {
+    targetLangPath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/${configFile.fastIntlDir}/zh-cn.json`;
   }
 
   return path.resolve(targetLangPath);

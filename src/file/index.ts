@@ -32,6 +32,7 @@ export function updateLangFiles(keyValue: string, text: string, validateDuplicat
   if (!keyValue.startsWith("I18N.")) {
     return;
   }
+
   const fullKey = keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || "";
   const targetFilename = getTargetLangPath();
 

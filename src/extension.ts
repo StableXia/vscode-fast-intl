@@ -45,12 +45,12 @@ export function activate(context: vscode.ExtensionContext) {
             for (const key in finalLangObj) {
               if (finalLangObj[key] === text) {
                 actions.push({
-                  title: `替换为 \`I18N.get(${key})\``,
+                  title: `替换为 \`I18N.get('${key}')\``,
                   command: "vscode-fast-intl.extractI18N",
                   arguments: [
                     {
                       targets: sameTextStrs,
-                      varName: `I18N.get(${key})`,
+                      varName: `I18N.get('${key}')`,
                     },
                   ],
                 });
