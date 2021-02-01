@@ -1,20 +1,19 @@
 import * as vscode from "vscode";
 import { ITargetStr } from "./types";
 import { triggerUpdateDecorations } from "./chineseCharDecorations";
+import { replaceAndUpdate } from "./replaceAndUpdate";
+import { getSuggestLangObj } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log(vscode?.workspace?.workspaceFolders?.[0].uri.path);
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand(
-    "vscode-fast-intl.helloFastIntl",
-    () => {
-      vscode.window.showInformationMessage("欢迎使用 vscode-fast-intl");
-    }
-  );
+  let disposable = vscode.commands.registerCommand("vscode-fast-intl.helloFastIntl", () => {
+    vscode.window.showInformationMessage("欢迎使用 vscode-fast-intl");
+  });
   context.subscriptions.push(disposable);
 
+  let finalLangObj: { [key: string]: string } = {};
   let targetStrs: ITargetStr[] = [];
   let activeEditor = vscode.window.activeTextEditor;
 
@@ -34,23 +33,38 @@ export function activate(context: vscode.ExtensionContext) {
       ],
       {
         provideCodeActions: function (document, range, context, token) {
-          const targetStr = targetStrs.find(
-            (t) => range.intersection(t.range) !== undefined
-          );
+          const targetStr = targetStrs.find((t) => range.intersection(t.range) !== undefined);
 
           if (targetStr) {
-            const sameTextStrs = targetStrs.filter(
-              (t) => t.text === targetStr.text
-            );
+            const sameTextStrs = targetStrs.filter((t) => t.text === targetStr.text);
+            const text = targetStr.text;
+            const actions = [];
 
-            console.log(sameTextStrs);
+            finalLangObj = getSuggestLangObj();
+
+            for (const key in finalLangObj) {
+              if (finalLangObj[key] === text) {
+                actions.push({
+                  title: `替换为 \`I18N.get(${key})\``,
+                  command: "vscode-fast-intl.extractI18N",
+                  arguments: [
+                    {
+                      targets: sameTextStrs,
+                      varName: `I18N.get(${key})`,
+                    },
+                  ],
+                });
+              }
+            }
+
             return [
+              ...actions,
               {
-                title: "111",
+                title: `替换为自定义 I18N 变量（共${sameTextStrs.length}处）`,
                 command: "vscode-fast-intl.extractI18N",
                 arguments: [
                   {
-                    targets: "21",
+                    targets: sameTextStrs,
                   },
                 ],
               },
@@ -63,8 +77,55 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vscode-fast-intl.extractI18N", (args) => {
-      vscode.window.showInformationMessage(`成功替换  处文案`);
+      return new Promise<string>((resolve) => {
+        if (args.varName) {
+          return resolve(args.varName);
+        }
+
+        return resolve(
+          vscode.window.showInputBox({
+            prompt: "请输入变量名，格式 `I18N.get('path)`，按 <回车> 启动替换",
+            value: `I18N.get()`,
+            validateInput(input) {
+              if (!input.match(/^I18N\.get\(["']\w+(\.\w+)*["'](,\s*{.*}){0,1}\)$/)) {
+                return "变量名格式 `I18N.get('path')`，如 `I18N.get('path')`，[path] 中可包含更多 `.`";
+              }
+            },
+          })
+        );
+      }).then((val) => {
+        // 没有输入变量名
+        if (!val) {
+          return;
+        }
+        const finalArgs = Array.isArray(args.targets) ? args.targets : [args.targets];
+        return finalArgs
+          .reverse()
+          .reduce((prev: Promise<any>, curr: ITargetStr, index: number) => {
+            return prev.then(() => {
+              return replaceAndUpdate(curr, val, !args.varName);
+            });
+          }, Promise.resolve())
+          .then(
+            () => {
+              vscode.window.showInformationMessage(`成功替换 ${finalArgs.length} 处文案`);
+            },
+            (err: any) => {
+              console.log(err, "err");
+            }
+          );
+      });
     })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidChangeTextDocument((event) => {
+      if (activeEditor && event.document === activeEditor.document) {
+        triggerUpdateDecorations((newTargetStrs) => {
+          targetStrs = newTargetStrs;
+        });
+      }
+    }, null)
   );
 }
 
