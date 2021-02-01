@@ -6,24 +6,19 @@ import * as path from "path";
  * 获取 fast-intl 配置文件
  */
 export function getFastIntlConfigFile() {
+  let fastIntlConfigJson = null;
   const fastIntlConfigFilePath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/fast-intl.config.ts`;
 
-  if (!fs.existsSync(fastIntlConfigFilePath)) {
-    return null;
-  }
-
-  let fastIntlConfigJson = null;
-
   try {
-    fastIntlConfigJson = require(fastIntlConfigFilePath);
+    fastIntlConfigJson = fs.existsSync(fastIntlConfigFilePath) ? require(fastIntlConfigFilePath) : null;
   } catch (err) {
-    console.log(err);
+    console.error(`Error in [getFastIntlConfigFile]: \n`, err);
   }
 
   return fastIntlConfigJson;
 }
 
-export function getTargetLangPath() {
+export function getZHCNLangPath() {
   let targetLangPath = "";
 
   const configFile = getFastIntlConfigFile();

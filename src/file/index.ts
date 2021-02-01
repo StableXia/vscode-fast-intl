@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import * as prettier from "prettier";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
-import { getTargetLangPath } from "../configs";
+import { getZHCNLangPath } from "../configs";
 import { getLangData } from "../utils";
 
 /**
@@ -34,7 +34,7 @@ export function updateLangFiles(keyValue: string, text: string, validateDuplicat
   }
 
   const fullKey = keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || "";
-  const targetFilename = getTargetLangPath();
+  const targetFilename = getZHCNLangPath();
 
   if (!fs.existsSync(targetFilename)) {
     fs.outputFileSync(targetFilename, generateNewLangFile(fullKey, text));
