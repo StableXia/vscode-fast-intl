@@ -42,6 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
             finalLangObj = getSuggestLangObj();
 
+            // TODO: 只对比一级 key 值
             for (const key in finalLangObj) {
               if (finalLangObj[key] === text) {
                 actions.push({
