@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { updateLangFiles } from "./file";
 import { ITargetStr } from "./types";
+import { pickPathFromI18NGet } from "./utils";
 
 export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate: boolean) {
   const edit = new vscode.WorkspaceEdit();
@@ -30,7 +31,7 @@ export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate
         const kvPair = varInStr.map((str, index) => {
           return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, "$1")}`;
         });
-        finalReplaceVal = `I18N.template(${val}, { ${kvPair.join(",\n")} })`;
+        finalReplaceVal = `I18N.get('${pickPathFromI18NGet(val)}', { ${kvPair.join(",\n")} })`;
 
         varInStr.forEach((str, index) => {
           finalReplaceText = finalReplaceText.replace(str, `{val${index + 1}}`);

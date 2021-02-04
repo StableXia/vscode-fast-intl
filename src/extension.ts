@@ -128,6 +128,17 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }, null)
   );
+
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      activeEditor = editor;
+      if (editor) {
+        triggerUpdateDecorations((newTargetStrs) => {
+          targetStrs = newTargetStrs;
+        });
+      }
+    }, null)
+  );
 }
 
 // this method is called when your extension is deactivated
