@@ -11,13 +11,7 @@ export function findTextInTs(code: string, fileName: string) {
     return matches;
   }
 
-  const ast = ts.createSourceFile(
-    "",
-    code,
-    ts.ScriptTarget.ES2015,
-    true,
-    ts.ScriptKind.TSX
-  );
+  const ast = ts.createSourceFile("", code, ts.ScriptTarget.ES2015, true, ts.ScriptKind.TSX);
 
   function visit(node: ts.Node) {
     switch (node.kind) {
@@ -54,11 +48,7 @@ export function findTextInTs(code: string, fileName: string) {
               const end = child.getEnd();
               const startPos = activeEditor.document.positionAt(start);
               const endPos = activeEditor.document.positionAt(end);
-              const { trimStart, trimEnd } = trimWhiteSpace(
-                code,
-                startPos,
-                endPos
-              );
+              const { trimStart, trimEnd } = trimWhiteSpace(code, startPos, endPos);
               const range = new vscode.Range(trimStart, trimEnd);
 
               matches.push({
@@ -76,9 +66,7 @@ export function findTextInTs(code: string, fileName: string) {
       case ts.SyntaxKind.TemplateExpression: {
         const { pos, end } = node;
         let templateContent = code.slice(pos, end);
-        templateContent = templateContent
-          .toString()
-          .replace(/\$\{[^\}]+\}/, "");
+        templateContent = templateContent.toString().replace(/\$\{[^\}]+\}/, "");
         if (templateContent.match(CHINESE_CHAR_REGEXP)) {
           const start = node.getStart();
           const end = node.getEnd();
@@ -98,9 +86,7 @@ export function findTextInTs(code: string, fileName: string) {
       case ts.SyntaxKind.NoSubstitutionTemplateLiteral: {
         const { pos, end } = node;
         let templateContent = code.slice(pos, end);
-        templateContent = templateContent
-          .toString()
-          .replace(/\$\{[^\}]+\}/, "");
+        templateContent = templateContent.toString().replace(/\$\{[^\}]+\}/, "");
         if (templateContent.match(CHINESE_CHAR_REGEXP)) {
           const start = node.getStart();
           const end = node.getEnd();
