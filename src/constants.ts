@@ -6,6 +6,3 @@ export const DEFAULT_FAST_INTL_CONFIG = {
   fastIntlDir: DEFAULT_LANG_DIR,
   targetLang: DEFAULT_TARGET_LANG,
 };
-
-// 中文字符匹配
-export const CHINESE_CHAR_REGEXP = /[^\x00-\xff]/g;

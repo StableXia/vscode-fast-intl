@@ -1,7 +1,6 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
-import { CHINESE_CHAR_REGEXP } from "./constants";
-import { removeFileComment, trimWhiteSpace } from "./utils";
+import { removeFileComment, trimWhiteSpace, CHINESE_CHAR_REGEXP } from "./utils";
 
 export function findTextInTs(code: string, fileName: string) {
   const matches: any[] = [];
