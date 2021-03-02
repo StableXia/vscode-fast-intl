@@ -10,3 +10,5 @@ export const I18N_PATH_REGEXP = /^I18N\.get\(["'](\w+(\.\w+)*)['"]\s*[,)]/;
 export function pickPathFromI18NGet(str: string) {
   return str.match(I18N_PATH_REGEXP)?.[1];
 }
+
+// export const I18N_PATH_REGEXP = /^I18N\.get\(["']\w+(\.\w+)*["'](,\s*{.*}){0,1}\)$/;

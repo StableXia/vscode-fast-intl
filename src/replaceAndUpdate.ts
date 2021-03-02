@@ -26,7 +26,7 @@ export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate
     // 若是模板字符串，看看其中是否包含变量
     if (last1Char === "`") {
       const varInStr = arg.text.match(/(\$\{[^\}]+?\})/g);
-      console.log(111, arg);
+
       if (varInStr) {
         const kvPair = varInStr.map((str, index) => {
           return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, "$1")}`;

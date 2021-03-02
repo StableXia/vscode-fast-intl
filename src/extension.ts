@@ -99,12 +99,14 @@ export function activate(context: vscode.ExtensionContext) {
         if (!val) {
           return;
         }
+
         const finalArgs = Array.isArray(args.targets) ? args.targets : [args.targets];
+
         return finalArgs
           .reverse()
           .reduce((prev: Promise<any>, curr: ITargetStr, index: number) => {
             return prev.then(() => {
-              return replaceAndUpdate(curr, val, !args.varName);
+              return replaceAndUpdate(curr, val, index === 0 ? !args.varName : false);
             });
           }, Promise.resolve())
           .then(
