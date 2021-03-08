@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { updateLangFiles } from "./file";
+import { updateLangFiles } from ".";
 import { ITargetStr } from "./types";
-import { pickPathFromI18NGet } from "./util";
+import { pickPathFromI18NGet } from "./regexp";
 
 export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate: boolean) {
   const edit = new vscode.WorkspaceEdit();

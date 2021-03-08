@@ -2,7 +2,8 @@ import * as vscode from "vscode";
 import { ITargetStr } from "./types";
 import { triggerUpdateDecorations } from "./chineseCharDecorations";
 import { replaceAndUpdate } from "./replaceAndUpdate";
-import { getSuggestLangObj } from "./util";
+import { getSuggestLangObj } from "./lang";
+import { I18N_PATH_VERIFY_REGEXP } from "./regexp";
 
 export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
@@ -35,11 +36,16 @@ export function activate(context: vscode.ExtensionContext) {
         provideCodeActions: function (document, range, context, token) {
           const targetStr = targetStrs.find((t) => range.intersection(t.range) !== undefined);
 
+          console.log({ targetStrs });
+          console.log({ targetStr });
+
           if (targetStr) {
+            console.log(11111);
             const sameTextStrs = targetStrs.filter((t) => t.text === targetStr.text);
             const text = targetStr.text;
             const actions = [];
 
+            console.log({ sameTextStrs });
             finalLangObj = getSuggestLangObj();
 
             // TODO: 只对比一级 key 值
@@ -88,8 +94,8 @@ export function activate(context: vscode.ExtensionContext) {
             prompt: "请输入变量名，格式 `I18N.get('path)`，按 <回车> 启动替换",
             value: `I18N.get()`,
             validateInput(input) {
-              if (!input.match(/^I18N\.get\(["']\w+(\.\w+)*["'](,\s*{.*}){0,1}\)$/)) {
-                return "变量名格式 `I18N.get('path')`，如 `I18N.get('path')`，[path] 中可包含更多 `.`";
+              if (!input.match(I18N_PATH_VERIFY_REGEXP)) {
+                return "变量名格式 `I18N.get('path')`，如 `I18N.get('name')`";
               }
             },
           })

@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { getZhHansLangPath } from "../config";
+import { getZhHansLangPath } from "./config";
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
@@ -12,11 +12,13 @@ export function getLangData(filePath: string) {
 
 export function getI18N() {
   const filePath = getZhHansLangPath();
+  console.log(2222, filePath);
   const langData = getLangData(filePath);
   return langData;
 }
 
 export function getSuggestLangObj() {
   const langObj = getI18N();
+  console.log(3333, langObj);
   return langObj;
 }

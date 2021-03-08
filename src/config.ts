@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
+import * as path from "path";
 import { getFileToJson } from "./utils";
 
 /**
@@ -20,17 +21,17 @@ export const getFtintlConfigFile = () => {
   return ftintlConfigJson;
 };
 
-/**
- * 获取 fast-intl 配置文件 (lang)
- */
-export const getFastIntlConfigFile = () => {
-  let fastIntlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.fastIntl`;
-  // 先找js
-  if (!fs.existsSync(fastIntlConfigJson)) {
-    return null;
-  }
-  return fastIntlConfigJson;
-};
+// /**
+//  * 获取 fast-intl 配置文件 (lang)
+//  */
+// export const getFastIntlConfigFile = () => {
+//   let fastIntlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.fastIntl`;
+//   // 先找js
+//   if (!fs.existsSync(fastIntlConfigJson)) {
+//     return null;
+//   }
+//   return fastIntlConfigJson;
+// };
 
 /**
  * 获取配置，支持从vscode和配置文件(优先)中取到配置项
@@ -38,7 +39,10 @@ export const getFastIntlConfigFile = () => {
 export function getValFromConfiguration(key: string) {
   let value = vscode.workspace.getConfiguration("vscode-fast-intl").get(key) as string;
 
+  console.log(444, value);
+
   let ftintlConfigJson = getFtintlConfigFile();
+  console.log(555, ftintlConfigJson);
   if (!ftintlConfigJson) {
     return value;
   }
@@ -55,7 +59,5 @@ export function getValFromConfiguration(key: string) {
  * 获取中文语言文件路径
  */
 export function getZhHansLangPath() {
-  let langPath = getValFromConfiguration("ZHHans");
-
-  return langPath;
+  return path.resolve(vscode.workspace.workspaceFolders?.[0].uri.path as string, getValFromConfiguration("ZHHans"));
 }

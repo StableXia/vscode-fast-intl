@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 import * as prettier from "prettier";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
-import { getZhHansLangPath } from "../config";
-import { getLangData } from "../util";
+import { getZhHansLangPath } from "./config";
+import { getLangData } from "./lang";
 
 /**
  * 使用 Prettier 格式化文件

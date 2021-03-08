@@ -1,6 +1,6 @@
 import * as assert from "assert";
 
-import { I18N_PATH_REGEXP, pickPathFromI18NGet } from "../../util/regexp";
+import { I18N_PATH_REGEXP, pickPathFromI18NGet } from "../../regexp";
 
 suite("regexp", () => {
   test("I18N_PATH_REGEXP", () => {
