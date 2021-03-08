@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { ITargetStr } from "./types";
 import { triggerUpdateDecorations } from "./chineseCharDecorations";
 import { replaceAndUpdate } from "./replaceAndUpdate";
-import { getSuggestLangObj } from "./utils";
+import { getSuggestLangObj } from "./util";
 
 export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file

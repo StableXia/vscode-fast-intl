@@ -23,7 +23,18 @@
 				"command": "vscode-fast-intl.helloFastIntl",
 				"title": "Hello Fast Intl"
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Fast Intl",
+			"properties": {
+				"vscode-fast-intl.ZHHans": {
+					"type": "string",
+					"default": ".fastIntl/zh-hans.json",
+					"description": "默认存储中文文件路径"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",

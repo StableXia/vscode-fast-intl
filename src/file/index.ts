@@ -2,9 +2,8 @@ import * as vscode from "vscode";
 import * as prettier from "prettier";
 import * as fs from "fs-extra";
 import * as _ from "lodash";
-import { getLangPrefix } from "../configs";
-import { getLangData } from "../utils";
-import { LANG_PREFIX } from "../constants";
+import { getZhHansLangPath } from "../config";
+import { getLangData } from "../util";
 
 /**
  * 使用 Prettier 格式化文件
@@ -35,7 +34,7 @@ export function updateLangFiles(keyValue: string, text: string, validateDuplicat
   }
 
   const fullKey = keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || "";
-  const targetFilename = `${getLangPrefix() || LANG_PREFIX}/zh-hans.json`;
+  const targetFilename = getZhHansLangPath();
 
   if (!fs.existsSync(targetFilename)) {
     fs.outputFileSync(targetFilename, generateNewLangFile(fullKey, text));
