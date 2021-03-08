@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import { getZhHansLangPath } from "./config";
+import { flattenObj } from "./utils";
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
@@ -19,6 +20,6 @@ export function getI18N() {
 
 export function getSuggestLangObj() {
   const langObj = getI18N();
-  console.log(3333, langObj);
-  return langObj;
+  console.log(3333, flattenObj(langObj));
+  return flattenObj(langObj);
 }
