@@ -21,18 +21,6 @@ export const getFtintlConfigFile = () => {
   return ftintlConfigJson;
 };
 
-// /**
-//  * 获取 fast-intl 配置文件 (lang)
-//  */
-// export const getFastIntlConfigFile = () => {
-//   let fastIntlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.fastIntl`;
-//   // 先找js
-//   if (!fs.existsSync(fastIntlConfigJson)) {
-//     return null;
-//   }
-//   return fastIntlConfigJson;
-// };
-
 /**
  * 获取配置，支持从vscode和配置文件(优先)中取到配置项
  */

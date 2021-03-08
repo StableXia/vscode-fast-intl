@@ -4,9 +4,14 @@ import { triggerUpdateDecorations } from "./chineseCharDecorations";
 import { replaceAndUpdate } from "./replaceAndUpdate";
 import { getSuggestLangObj } from "./lang";
 import { I18N_PATH_VERIFY_REGEXP } from "./regexp";
-import { getValFromConfiguration } from "./config";
+import { getValFromConfiguration, getFtintlConfigFile } from "./config";
 
 export function activate(context: vscode.ExtensionContext) {
+  if (!getFtintlConfigFile()) {
+    /** 存在配置文件则开启 */
+    return;
+  }
+
   // The command has been defined in the package.json file
   // Now provide the implementation of the command with registerCommand
   // The commandId parameter must match the command field in package.json
