@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { getTargetLangPath } from "../configs";
+import { getCurrentProjectLangPath } from "../configs";
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
@@ -11,7 +11,7 @@ export function getLangData(filePath: string) {
 }
 
 export function getI18N() {
-  const filePath = getTargetLangPath();
+  const filePath = getCurrentProjectLangPath();
   const langData = getLangData(filePath);
   return langData;
 }
