@@ -83,3 +83,13 @@ export function trimWhiteSpace(code: string, startPos: vscode.Position, endPos: 
     trimEnd: new vscode.Position(endLine, endCol),
   };
 }
+
+export function findMatchKey(langObj: { [key: string]: string }, val: string) {
+  for (const key in langObj) {
+    if (langObj[key] === val) {
+      return key;
+    }
+  }
+
+  return null;
+}

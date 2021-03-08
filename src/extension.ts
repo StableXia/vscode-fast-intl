@@ -5,6 +5,7 @@ import { replaceAndUpdate } from "./replaceAndUpdate";
 import { getSuggestLangObj } from "./lang";
 import { I18N_PATH_VERIFY_REGEXP } from "./regexp";
 import { getValFromConfiguration, getFtintlConfigFile } from "./config";
+import { findMatchKey } from "./utils";
 
 export function activate(context: vscode.ExtensionContext) {
   if (!getFtintlConfigFile()) {
@@ -44,12 +45,12 @@ export function activate(context: vscode.ExtensionContext) {
           provideCodeActions: function (document, range, context, token) {
             const targetStr = targetStrs.find((t) => range.intersection(t.range) !== undefined);
 
+            finalLangObj = getSuggestLangObj();
+
             if (targetStr) {
               const sameTextStrs = targetStrs.filter((t) => t.text === targetStr.text);
               const text = targetStr.text;
               const actions = [];
-
-              finalLangObj = getSuggestLangObj();
 
               // TODO: 只对比一级 key 值
               for (const key in finalLangObj) {
@@ -150,6 +151,50 @@ export function activate(context: vscode.ExtensionContext) {
         });
       }
     }, null)
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("vscode-fast-intl.autoExtract", () => {
+      if (targetStrs.length === 0) {
+        vscode.window.showInformationMessage("没有找到可替换的公共文案");
+        return;
+      }
+
+      const replaceableStrs = targetStrs.reduce((prev: Array<{ target: ITargetStr; key: string }>, curr) => {
+        const key = findMatchKey(finalLangObj, curr.text);
+        if (key) {
+          return prev.concat({
+            target: curr,
+            key,
+          });
+        }
+
+        return prev;
+      }, []);
+
+      if (replaceableStrs.length === 0) {
+        vscode.window.showInformationMessage("没有找到可替换的公共文案");
+        return;
+      }
+
+      vscode.window.showInformationMessage(`共找到 ${replaceableStrs.length} 处可自动替换的文案，是否替换？`, { modal: true }, "Yes").then((action) => {
+        if (action === "Yes") {
+          replaceableStrs
+            .reverse()
+            .reduce((prev: Promise<any>, obj) => {
+              return prev.then(() => {
+                return replaceAndUpdate(obj.target, `I18N.get('${obj.key}')`, false);
+              });
+            }, Promise.resolve())
+            .then(() => {
+              vscode.window.showInformationMessage("替换完成");
+            })
+            .catch((err: any) => {
+              vscode.window.showErrorMessage(err.message);
+            });
+        }
+      });
+    })
   );
 }
 
