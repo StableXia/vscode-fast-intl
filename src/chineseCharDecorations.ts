@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { findChineseText } from "./findChineseText";
+import { setLineDecorations } from "./lineAnnotation";
 
 /**
  * 中文提示样式标记
@@ -67,7 +68,7 @@ export function updateDecorations() {
   });
 
   /** 设置 I18N 的提示 */
-  //  setLineDecorations(activeEditor);
+  setLineDecorations(activeEditor);
   /** 设置中文的提示 */
   activeEditor.setDecorations(chineseCharDecoration, chineseChars);
 
