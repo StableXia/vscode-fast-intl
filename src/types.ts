@@ -5,8 +5,3 @@ export interface ITargetStr {
   range: vscode.Range;
   isString: boolean;
 }
-
-export interface IFastIntlConfig {
-  fastIntlDir: string;
-  targetLang: string;
-}

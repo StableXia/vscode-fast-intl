@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { updateLangFiles } from ".";
+import { updateLangFiles } from "./file";
 import { ITargetStr } from "./types";
 import { pickPathFromI18NGet } from "./regexp";
 

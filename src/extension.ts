@@ -4,6 +4,7 @@ import { triggerUpdateDecorations } from "./chineseCharDecorations";
 import { replaceAndUpdate } from "./replaceAndUpdate";
 import { getSuggestLangObj } from "./lang";
 import { I18N_PATH_VERIFY_REGEXP } from "./regexp";
+import { getValFromConfiguration } from "./config";
 
 export function activate(context: vscode.ExtensionContext) {
   // The command has been defined in the package.json file
@@ -24,63 +25,61 @@ export function activate(context: vscode.ExtensionContext) {
     });
   }
 
-  context.subscriptions.push(
-    vscode.languages.registerCodeActionsProvider(
-      [
-        { scheme: "file", language: "typescriptreact" },
-        { scheme: "file", language: "typescript" },
-        { scheme: "file", language: "javascriptreact" },
-        { scheme: "file", language: "javascript" },
-      ],
-      {
-        provideCodeActions: function (document, range, context, token) {
-          const targetStr = targetStrs.find((t) => range.intersection(t.range) !== undefined);
+  const hasLightBulb = getValFromConfiguration("enableReplaceSuggestion");
+  if (hasLightBulb) {
+    context.subscriptions.push(
+      vscode.languages.registerCodeActionsProvider(
+        [
+          { scheme: "file", language: "typescriptreact" },
+          { scheme: "file", language: "typescript" },
+          { scheme: "file", language: "javascriptreact" },
+          { scheme: "file", language: "javascript" },
+        ],
+        {
+          provideCodeActions: function (document, range, context, token) {
+            const targetStr = targetStrs.find((t) => range.intersection(t.range) !== undefined);
 
-          console.log({ targetStrs });
-          console.log({ targetStr });
+            if (targetStr) {
+              const sameTextStrs = targetStrs.filter((t) => t.text === targetStr.text);
+              const text = targetStr.text;
+              const actions = [];
 
-          if (targetStr) {
-            console.log(11111);
-            const sameTextStrs = targetStrs.filter((t) => t.text === targetStr.text);
-            const text = targetStr.text;
-            const actions = [];
+              finalLangObj = getSuggestLangObj();
 
-            console.log({ sameTextStrs });
-            finalLangObj = getSuggestLangObj();
+              // TODO: 只对比一级 key 值
+              for (const key in finalLangObj) {
+                if (finalLangObj[key] === text) {
+                  actions.push({
+                    title: `替换为 \`I18N.get('${key}')\``,
+                    command: "vscode-fast-intl.extractI18N",
+                    arguments: [
+                      {
+                        targets: sameTextStrs,
+                        varName: `I18N.get('${key}')`,
+                      },
+                    ],
+                  });
+                }
+              }
 
-            // TODO: 只对比一级 key 值
-            for (const key in finalLangObj) {
-              if (finalLangObj[key] === text) {
-                actions.push({
-                  title: `替换为 \`I18N.get('${key}')\``,
+              return [
+                ...actions,
+                {
+                  title: `替换为自定义 I18N 变量（共${sameTextStrs.length}处）`,
                   command: "vscode-fast-intl.extractI18N",
                   arguments: [
                     {
                       targets: sameTextStrs,
-                      varName: `I18N.get('${key}')`,
                     },
                   ],
-                });
-              }
+                },
+              ];
             }
-
-            return [
-              ...actions,
-              {
-                title: `替换为自定义 I18N 变量（共${sameTextStrs.length}处）`,
-                command: "vscode-fast-intl.extractI18N",
-                arguments: [
-                  {
-                    targets: sameTextStrs,
-                  },
-                ],
-              },
-            ];
-          }
-        },
-      }
-    )
-  );
+          },
+        }
+      )
+    );
+  }
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vscode-fast-intl.extractI18N", (args) => {

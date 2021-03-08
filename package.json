@@ -32,6 +32,16 @@
 					"type": "string",
 					"default": ".fastIntl/zh-hans.json",
 					"description": "默认存储中文文件路径"
+				},
+				"vscode-fast-intl.enableReplaceSuggestion": {
+					"type": "boolean",
+					"default": true,
+					"description": "替换建议"
+				},
+				"vscode-fast-intl.i18nFilesPattern": {
+					"type": "string",
+					"default": "**/*.+(js|jsx|ts*)",
+					"description": "匹配翻译文件"
 				}
 			}
 		}
@@ -63,6 +73,7 @@
 		"@types/prettier": "^2.1.6",
 		"fs-extra": "^9.1.0",
 		"lodash": "^4.17.20",
-		"prettier": "^2.2.1"
+		"prettier": "^2.2.1",
+		"minimatch": "^3.0.4"
 	}
 }

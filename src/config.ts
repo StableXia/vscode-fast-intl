@@ -39,10 +39,7 @@ export const getFtintlConfigFile = () => {
 export function getValFromConfiguration(key: string) {
   let value = vscode.workspace.getConfiguration("vscode-fast-intl").get(key) as string;
 
-  console.log(444, value);
-
   let ftintlConfigJson = getFtintlConfigFile();
-  console.log(555, ftintlConfigJson);
   if (!ftintlConfigJson) {
     return value;
   }

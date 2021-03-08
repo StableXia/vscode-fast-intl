@@ -13,13 +13,11 @@ export function getLangData(filePath: string) {
 
 export function getI18N() {
   const filePath = getZhHansLangPath();
-  console.log(2222, filePath);
   const langData = getLangData(filePath);
   return langData;
 }
 
 export function getSuggestLangObj() {
   const langObj = getI18N();
-  console.log(3333, flattenObj(langObj));
   return flattenObj(langObj);
 }

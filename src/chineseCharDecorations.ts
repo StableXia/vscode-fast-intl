@@ -1,6 +1,21 @@
 import * as vscode from "vscode";
+import * as minimatch from "minimatch";
 import { findChineseText } from "./findChineseText";
 import { setLineDecorations } from "./lineAnnotation";
+import { getValFromConfiguration } from "./config";
+
+/**
+ * 查看文件名是否匹配
+ */
+function matchPattern() {
+  const activeEditor = vscode.window.activeTextEditor;
+  const pattern = getValFromConfiguration("i18nFilesPattern");
+  if (activeEditor && pattern !== "" && !minimatch(activeEditor.document.uri.fsPath.replace(vscode.workspace.workspaceFolders?.[0].uri.path + "/", ""), pattern)) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 /**
  * 中文提示样式标记
@@ -33,6 +48,10 @@ export function triggerUpdateDecorations(callback: (payload: any) => void) {
     if (prevChineseCharDecoration) {
       /** 清除原有的提示 */
       activeEditor?.setDecorations(prevChineseCharDecoration, []);
+    }
+
+    if (!matchPattern()) {
+      return;
     }
 
     const { targetStrs, chineseCharDecoration } = updateDecorations() || {};
