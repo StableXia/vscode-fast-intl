@@ -2,7 +2,7 @@
 	"name": "vscode-fast-intl",
 	"displayName": "vscode-fast-intl",
 	"description": "intl fast vscode",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"publisher": "xiawen",
 	"icon": "app-logo.jpg",
 	"engines": {
@@ -75,7 +75,6 @@
 		"eslint": "^7.15.0",
 		"glob": "^7.1.6",
 		"mocha": "^8.1.3",
-		"typescript": "^4.1.2",
 		"vscode-test": "^1.4.1"
 	},
 	"dependencies": {
@@ -85,6 +84,7 @@
 		"fs-extra": "^9.1.0",
 		"lodash": "^4.17.20",
 		"prettier": "^2.2.1",
-		"minimatch": "^3.0.4"
+		"minimatch": "^3.0.4",
+		"typescript": "^4.1.2"
 	}
 }

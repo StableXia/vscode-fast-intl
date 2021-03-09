@@ -93,3 +93,15 @@ export function findMatchKey(langObj: { [key: string]: string }, val: string) {
 
   return null;
 }
+
+export function readFile(filePath: string) {
+  if (fs.existsSync(filePath)) {
+    return fs.readFileSync(filePath, "utf-8");
+  }
+}
+
+export function writeFile(filePath: string, file: string) {
+  if (fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, file);
+  }
+}
