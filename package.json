@@ -2,13 +2,19 @@
 	"name": "vscode-fast-intl",
 	"displayName": "vscode-fast-intl",
 	"description": "intl fast vscode",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "xiawen",
+	"icon": "app-logo.jpg",
 	"engines": {
 		"vscode": "^1.51.0"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/xiaotangdou/vscode-fast-intl"
+	},
 	"categories": [
-		"Other"
+		"Other",
+		"Linters"
 	],
 	"activationEvents": [
 		"onCommand:vscode-fast-intl.helloFastIntl",
