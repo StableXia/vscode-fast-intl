@@ -35,6 +35,13 @@
 				"title": "Replace Chinese copy of current file"
 			}
 		],
+		"keybindings": [
+			{
+			  "command": "vscode-fast-intl.autoExtract",
+			  "key": "cmd+ctrl+r",
+			  "mac": "cmd+ctrl+r"
+			}
+		],
 		"configuration": {
 			"type": "object",
 			"title": "Fast Intl",
