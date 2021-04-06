@@ -40,15 +40,9 @@ export function updateLangFiles(keyValue: string, text: string, validateDuplicat
     fs.outputFileSync(targetFilename, generateNewLangFile(fullKey, text));
     vscode.window.showInformationMessage(`成功新建语言文件 ${targetFilename}`);
   } else {
-    // 清除 require 缓存，解决手动更新语言文件后再自动抽取，导致之前更新失效的问题
-    const mainContent = getLangData(targetFilename);
-    const obj = mainContent;
+    const obj = getLangData(targetFilename);
 
-    if (Object.keys(obj).length === 0) {
-      vscode.window.showWarningMessage(`zh-cn解析失败，该文件包含的文案无法自动补全`);
-    }
-
-    if (validateDuplicate && _.get(obj, fullKey) !== undefined) {
+    if (validateDuplicate && _.get(obj, fullKey.split(".")[0]) !== undefined) {
       vscode.window.showErrorMessage(`${targetFilename} 中已存在 key 为 \`${fullKey}\` 的翻译，请重新命名变量`);
       throw new Error("duplicate");
     }
