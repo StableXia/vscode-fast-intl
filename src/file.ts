@@ -5,6 +5,29 @@ import * as _ from "lodash";
 import { getZhHansLangPath } from "./config";
 import { getLangData } from "./lang";
 
+function isDuplicateKey(obj: any, path: string) {
+  let fullKey = path;
+  let idx = fullKey.lastIndexOf(".");
+
+  if (idx === -1) {
+    return _.get(obj, fullKey) !== undefined;
+  }
+
+  if (_.get(obj, fullKey) !== undefined) {
+    return true;
+  }
+
+  while (idx !== -1) {
+    fullKey = fullKey.slice(0, idx);
+
+    if (_.get(obj, fullKey) !== undefined) {
+      return typeof _.get(obj, fullKey) === "string";
+    }
+
+    idx = fullKey.lastIndexOf(".");
+  }
+}
+
 /**
  * 使用 Prettier 格式化文件
  * @param fileContent
@@ -42,13 +65,16 @@ export function updateLangFiles(keyValue: string, text: string, validateDuplicat
   } else {
     const obj = getLangData(targetFilename);
 
-    if (validateDuplicate && _.get(obj, fullKey.split(".")[0]) !== undefined) {
+    // _.get(obj, fullKey.split(".")[0]) !== undefined
+    // _.get(obj, fullKey) !== undefined
+    if (validateDuplicate && isDuplicateKey(obj, fullKey)) {
       vscode.window.showErrorMessage(`${targetFilename} 中已存在 key 为 \`${fullKey}\` 的翻译，请重新命名变量`);
       throw new Error("duplicate");
     }
     // \n 会被自动转义成 \\n，这里转回来
     text = text.replace(/\\n/gm, "\n");
     _.set(obj, fullKey, text);
+
     fs.writeFileSync(targetFilename, JSON.stringify(obj, null, 2));
   }
 }
