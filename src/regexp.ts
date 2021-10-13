@@ -12,4 +12,4 @@ export function pickPathFromI18NGet(str: string) {
 }
 
 // 自定义 path 校验
-export const I18N_PATH_VERIFY_REGEXP = /^I18N\.get\(["']\w+(\.\w+)*["']\)$/;
+export const I18N_PATH_VERIFY_REGEXP = /^I18N\.get\(["']\w+(\.\w+)+["']\)$/;

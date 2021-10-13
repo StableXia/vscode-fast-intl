@@ -40,16 +40,26 @@
 			  "command": "vscode-fast-intl.autoExtract",
 			  "key": "cmd+ctrl+r",
 			  "mac": "cmd+ctrl+r"
+			},
+			{
+			  "command": "vscode-fast-intl.openFastIntl",
+			  "key": "cmd+ctrl+o",
+			  "mac": "cmd+ctrl+o"
 			}
 		],
 		"configuration": {
 			"type": "object",
 			"title": "Fast Intl",
 			"properties": {
-				"vscode-fast-intl.ZHHans": {
-					"type": "string",
-					"default": ".fastIntl/zh-hans.json",
-					"description": "默认存储中文文件路径"
+        "vscode-fast-intl.openFastIntl": {
+					"type": "boolean",
+					"default": true,
+					"description": "是否开启 Fast Intl"
+				},
+				"vscode-fast-intl.langPrefix": {
+          "type": "string",
+          "default": ".fastIntl/zh-hans/",
+          "description": "语言默认存储路径"
 				},
 				"vscode-fast-intl.enableReplaceSuggestion": {
 					"type": "boolean",

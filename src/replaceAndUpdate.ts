@@ -1,9 +1,13 @@
-import * as vscode from "vscode";
-import { updateLangFiles } from "./file";
-import { ITargetStr } from "./types";
-import { pickPathFromI18NGet } from "./regexp";
+import * as vscode from 'vscode';
+import { updateLangFiles } from './file';
+import { ITargetStr } from './types';
+import { pickPathFromI18NGet } from './regexp';
 
-export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate: boolean) {
+export function replaceAndUpdate(
+  arg: ITargetStr,
+  val: string,
+  validateDuplicate: boolean,
+) {
   const edit = new vscode.WorkspaceEdit();
   const { document } = vscode.window.activeTextEditor as vscode.TextEditor;
 
@@ -18,20 +22,22 @@ export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate
       startColPostion = arg.range.start.translate(0, 0);
     }
     const prevTextRange = new vscode.Range(startColPostion, arg.range.start);
-    const [last2Char, last1Char] = document.getText(prevTextRange).split("");
+    const [last2Char, last1Char] = document.getText(prevTextRange).split('');
     let finalReplaceVal = val;
-    if (last2Char === "=") {
-      finalReplaceVal = "{" + val + "}";
+    if (last2Char === '=') {
+      finalReplaceVal = '{' + val + '}';
     }
     // 若是模板字符串，看看其中是否包含变量
-    if (last1Char === "`") {
+    if (last1Char === '`') {
       const varInStr = arg.text.match(/(\$\{[^\}]+?\})/g);
 
       if (varInStr) {
         const kvPair = varInStr.map((str, index) => {
-          return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, "$1")}`;
+          return `val${index + 1}: ${str.replace(/^\${([^\}]+)\}$/, '$1')}`;
         });
-        finalReplaceVal = `I18N.get('${pickPathFromI18NGet(val)}', { ${kvPair.join(",\n")} })`;
+        finalReplaceVal = `I18N.get('${pickPathFromI18NGet(
+          val,
+        )}', { ${kvPair.join(',\n')} })`;
 
         varInStr.forEach((str, index) => {
           finalReplaceText = finalReplaceText.replace(str, `{val${index + 1}}`);
@@ -45,10 +51,10 @@ export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate
         start: arg.range.start.translate(0, -1),
         end: arg.range.end.translate(0, 1),
       }),
-      finalReplaceVal
+      finalReplaceVal,
     );
   } else {
-    edit.replace(document.uri, arg.range, "{" + val + "}");
+    edit.replace(document.uri, arg.range, '{' + val + '}');
   }
 
   try {
@@ -56,7 +62,7 @@ export function replaceAndUpdate(arg: ITargetStr, val: string, validateDuplicate
     updateLangFiles(val, finalReplaceText, validateDuplicate);
     // 若更新成功再替换代码
     return vscode.workspace.applyEdit(edit);
-  } catch (e) {
+  } catch (e: any) {
     return Promise.reject(e.message);
   }
 }
