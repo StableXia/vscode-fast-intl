@@ -5,7 +5,7 @@ import { getFileToJson } from './utils';
 import { ROOT_DIR, I18N_GLOB } from './constants';
 
 /**
- * 获取 ftintl 配置文件 (cli)
+ * 获取 ftintl 配置文件 (cli 共用)
  */
 export const getFastIntlConfigFile = () => {
   let configPath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.ftintlrc.js`;

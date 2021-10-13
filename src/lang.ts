@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as globby from 'globby';
-import { flattenObj, getLangJson } from './utils';
+import { flattenObj, getFileToJson } from './utils';
 import { getCurrentProjectLangPath } from './config';
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
-    return getLangJson(filePath);
+    return getFileToJson(filePath);
   } else {
     return {};
   }

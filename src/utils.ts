@@ -20,28 +20,6 @@ export function flattenObj(obj: { [key: string]: any }, prefix?: string) {
 }
 
 /**
- * 获取文件内容并转成json
- */
-export function getFileToJson(filePath: string) {
-  let temp: { [key: string]: any } = {};
-
-  try {
-    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
-
-    let obj = fileContent.match(
-      /export\s*default\s*({[\s\S]+);?$/,
-    )?.[1] as string;
-    obj = obj.replace(/\s*;\s*$/, '');
-
-    temp = eval('(' + obj + ')');
-  } catch (err) {
-    console.error(err);
-  }
-
-  return temp;
-}
-
-/**
  * 移除注释
  */
 export function removeFileComment(code: string, fileName: string) {
@@ -118,22 +96,24 @@ export function writeFile(filePath: string, file: string) {
   }
 }
 
-export function getLangJson(fileName: string) {
-  const fileContent = fs.readFileSync(fileName, { encoding: 'utf8' });
-  let obj = fileContent.match(
-    /export\s*default\s*({[\s\S]+);?$/,
-  )?.[1] as string;
-
-  obj = obj.replace(/\s*;\s*$/, '');
-
-  let jsObj = {};
+/**
+ * 获取文件内容并转成json
+ */
+export function getFileToJson(filePath: string) {
+  let temp: { [key: string]: any } = {};
 
   try {
-    jsObj = eval('(' + obj + ')');
+    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
+
+    let obj = fileContent.match(
+      /export\s*default\s*({[\s\S]+);?$/,
+    )?.[1] as string;
+    obj = obj.replace(/\s*;\s*$/, '');
+
+    temp = eval('(' + obj + ')');
   } catch (err) {
-    console.log(obj);
     console.error(err);
   }
 
-  return jsObj;
+  return temp;
 }
