@@ -29,12 +29,12 @@ export function getValFromConfiguration(key: string) {
     .getConfiguration('vscode-fast-intl')
     .get(key) as string;
 
-  let ftintlConfigJson = getFastIntlConfigFile();
-  if (!ftintlConfigJson) {
+  let configPath = getFastIntlConfigFile();
+  if (!configPath) {
     return value;
   }
 
-  const config = getFileToJson(ftintlConfigJson);
+  const config = getFileToJson(configPath);
   if (key in config) {
     value = config[key];
   }

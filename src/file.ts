@@ -127,7 +127,5 @@ export function addImportToMainLangFile(newFilename: string) {
     mainContent = `import ${newFilename} from './${newFilename}';\n\nexport default Object.assign({}, {\n  ${newFilename},\n});`;
   }
 
-  console.log(mainContent);
-
   fs.outputFileSync(`${langPrefix}/index.ts`, mainContent);
 }
