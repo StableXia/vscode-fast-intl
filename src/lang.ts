@@ -26,10 +26,7 @@ export function getI18N() {
     const filename = path.parse(curr).name;
 
     if (filename === 'index') {
-      return {
-        ...prev,
-        ...getLangData(curr),
-      };
+      return prev;
     }
 
     const fileContent = getLangData(curr);

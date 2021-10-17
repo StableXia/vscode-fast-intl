@@ -152,8 +152,6 @@ export function activate(context: vscode.ExtensionContext) {
           return;
         }
 
-        console.log(args);
-
         const finalArgs = Array.isArray(args.targets)
           ? args.targets
           : [args.targets];
