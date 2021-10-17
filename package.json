@@ -2,12 +2,13 @@
 	"name": "vscode-fast-intl",
 	"displayName": "vscode-fast-intl",
 	"description": "intl fast vscode",
-	"version": "0.0.4",
+	"version": "2.0.0",
 	"publisher": "xiawen",
 	"icon": "app-logo.jpg",
 	"engines": {
 		"vscode": "^1.51.0"
 	},
+  "license": "ISC",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/xiaotangdou/vscode-fast-intl"
@@ -95,6 +96,10 @@
 		"vscode-test": "^1.4.1"
 	},
 	"dependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.0",
+    "@babel/register": "^7.15.3",
 		"@types/fs-extra": "^9.0.6",
 		"@types/lodash": "^4.14.168",
 		"@types/prettier": "^2.1.6",

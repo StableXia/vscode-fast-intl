@@ -6,12 +6,20 @@ import { getSuggestLangObj } from './lang';
 import { I18N_PATH_VERIFY_REGEXP } from './regexp';
 import { getValFromConfiguration, getFastIntlConfigFile } from './config';
 import { findMatchKey } from './utils';
+import babelRegister from './babelRegister';
 
 export function activate(context: vscode.ExtensionContext) {
+  const configPath = getFastIntlConfigFile();
+
   /** 存在配置文件则开启 */
-  if (!getFastIntlConfigFile()) {
+  if (!configPath) {
     return;
   }
+
+  babelRegister.setOnlyMap({
+    key: 'config',
+    value: configPath ? [configPath] : [],
+  });
 
   context.subscriptions.push(
     vscode.commands.registerCommand('vscode-fast-intl.openFastIntl', () => {

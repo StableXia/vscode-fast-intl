@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import * as fs from 'fs-extra';
 import * as ts from 'typescript';
 import * as vscode from 'vscode';
@@ -116,4 +117,19 @@ export function getFileToJson(filePath: string) {
   }
 
   return temp;
+}
+
+export function compatESModuleRequire<
+  T extends { __esModule: boolean; default: any }
+>(m: T): T extends { __esModule: true; default: infer U } ? U : T {
+  return m.__esModule ? m.default : m;
+}
+
+export function winPath(path: string) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+  if (isExtendedLengthPath) {
+    return path;
+  }
+
+  return path.replace(/\\/g, '/');
 }

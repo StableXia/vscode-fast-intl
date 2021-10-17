@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getFileToJson } from './utils';
+import { compatESModuleRequire } from './utils';
 import { ROOT_DIR, I18N_GLOB } from './constants';
 
 /**
@@ -34,7 +34,8 @@ export function getValFromConfiguration(key: string) {
     return value;
   }
 
-  const config = getFileToJson(configPath);
+  const config = compatESModuleRequire(require(configPath));
+
   if (key in config) {
     value = config[key];
   }
