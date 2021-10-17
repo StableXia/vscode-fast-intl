@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
+import * as path from 'path';
 import * as globby from 'globby';
-import { flattenObj, getFileToJson } from './utils';
+import { flattenObj, compatESModuleRequire } from './utils';
 import { getCurrentProjectLangPath } from './config';
+import babelRegister from './babelRegister';
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
-    return getFileToJson(filePath);
+    return compatESModuleRequire(require(filePath));
   } else {
     return {};
   }
@@ -15,11 +17,19 @@ export function getLangData(filePath: string) {
 export function getI18N() {
   const paths: string[] = globby.sync(getCurrentProjectLangPath());
 
-  const langObj = paths.reduce((prev, curr) => {
-    const filename = (curr.split('/').pop() as string).replace(/\.tsx?$/, '');
+  babelRegister.setOnlyMap({
+    key: 'langPaths',
+    value: paths,
+  });
 
-    if (filename.replace(/\.tsx?/, '') === 'index') {
-      return prev;
+  const langObj = paths.reduce((prev, curr) => {
+    const filename = path.parse(curr).name;
+
+    if (filename === 'index') {
+      return {
+        ...prev,
+        ...getLangData(curr),
+      };
     }
 
     const fileContent = getLangData(curr);
