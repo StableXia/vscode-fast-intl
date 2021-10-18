@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import * as prettier from 'prettier';
+import * as ts from 'typescript';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import { getLangData } from './lang';
 import { getLangPrefix } from './config';
+import { readFile } from './utils';
 
 function isDuplicateKey(obj: any, path: string) {
   let fullKey = path;
@@ -91,41 +93,53 @@ export function updateLangFiles(
   }
 }
 
+export function insertStr(soure: string, start: number, newStr: string) {
+  return soure.slice(0, start) + newStr + soure.slice(start);
+}
+
 export function addImportToMainLangFile(newFilename: string) {
-  let mainContent = '';
   const langPrefix = getLangPrefix();
-  if (fs.existsSync(`${langPrefix}/index.ts`)) {
-    mainContent = fs.readFileSync(`${langPrefix}/index.ts`, 'utf8');
+  const filePath = `${langPrefix}/index.ts`;
+  let mainContent = '';
+
+  if (fs.existsSync(filePath)) {
+    mainContent = readFile(filePath) || '';
     mainContent = mainContent.replace(
       /^(\s*import.*?;)$/m,
       `$1\nimport ${newFilename} from './${newFilename}';`,
     );
 
-    if (/\n(}\);)/.test(mainContent)) {
-      if (/\,\n(}\);)/.test(mainContent)) {
-        /** 最后一行包含,号 */
-        mainContent = mainContent.replace(/(}\);)/, `  ${newFilename},\n$1`);
-      } else {
-        /** 最后一行不包含,号 */
-        mainContent = mainContent.replace(
-          /\n(}\);)/,
-          `,\n  ${newFilename},\n$1`,
-        );
-      }
-    }
+    const ast = ts.createSourceFile(
+      '',
+      mainContent,
+      ts.ScriptTarget.ES2015,
+      true,
+      ts.ScriptKind.TSX,
+    );
 
-    if (/\n(};)/.test(mainContent)) {
-      if (/\,\n(};)/.test(mainContent)) {
-        /** 最后一行包含,号 */
-        mainContent = mainContent.replace(/(};)/, `  ${newFilename},\n$1`);
-      } else {
-        /** 最后一行不包含,号 */
-        mainContent = mainContent.replace(/\n(};)/, `,\n  ${newFilename},\n$1`);
+    function visit(node: ts.Node) {
+      switch (node.kind) {
+        case ts.SyntaxKind.ObjectLiteralExpression: {
+          const text = node.getText().replace(/[{}\s]/g, '');
+          if (/,$/.test(text)) {
+            mainContent = insertStr(mainContent, node.end - 1, newFilename);
+          } else {
+            mainContent = insertStr(
+              mainContent,
+              node.end - 1,
+              `,${newFilename}`,
+            );
+          }
+          break;
+        }
       }
+
+      ts.forEachChild(node, visit);
     }
+    ts.forEachChild(ast, visit);
   } else {
-    mainContent = `import ${newFilename} from './${newFilename}';\n\nexport default Object.assign({}, {\n  ${newFilename},\n});`;
+    mainContent = `import ${newFilename} from './${newFilename}';\n\nexport default {\n  ${newFilename}\n};`;
   }
 
-  fs.outputFileSync(`${langPrefix}/index.ts`, mainContent);
+  fs.outputFileSync(filePath, prettierFile(mainContent));
 }
