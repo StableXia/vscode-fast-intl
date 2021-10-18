@@ -4,7 +4,7 @@ import * as ts from 'typescript';
 import * as fs from 'fs-extra';
 import * as _ from 'lodash';
 import { getLangData } from './lang';
-import { getLangPrefix } from './config';
+import { getValFromConfiguration, getCurrentProjectLangPath } from './config';
 import { readFile } from './utils';
 
 function isDuplicateKey(obj: any, path: string) {
@@ -62,15 +62,30 @@ export function updateLangFiles(
     return;
   }
 
-  const [filename, ...rest] = (
-    keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || ''
-  ).split('.');
-  const fullKey = rest.join('.');
-  const targetFilename = `${getLangPrefix()}/${filename}.ts`;
+  const mode = getValFromConfiguration('mode');
+  const langPath = getCurrentProjectLangPath();
+
+  let filename: string = '';
+  let targetFilename: string;
+  let fullKey: string;
+
+  if (mode === 'single') {
+    fullKey = keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || '';
+    targetFilename = `${langPath}.ts`;
+  } else {
+    const keyArr = (keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || '').split(
+      '.',
+    );
+    filename = keyArr.shift() as string;
+    fullKey = keyArr.join('.');
+    targetFilename = `${langPath}/${filename}.ts`;
+  }
 
   if (!fs.existsSync(targetFilename)) {
     fs.outputFileSync(targetFilename, generateNewLangFile(fullKey, text));
-    addImportToMainLangFile(filename);
+    if (mode !== 'single') {
+      addImportToMainLangFile(filename);
+    }
     vscode.window.showInformationMessage(`成功新建语言文件 ${targetFilename}`);
   } else {
     const obj = getLangData(targetFilename);
@@ -98,7 +113,7 @@ export function insertStr(soure: string, start: number, newStr: string) {
 }
 
 export function addImportToMainLangFile(newFilename: string) {
-  const langPrefix = getLangPrefix();
+  const langPrefix = getCurrentProjectLangPath();
   const filePath = `${langPrefix}/index.ts`;
   let mainContent = '';
 

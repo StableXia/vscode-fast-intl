@@ -3,7 +3,7 @@ import { ITargetStr } from './types';
 import { triggerUpdateDecorations } from './chineseCharDecorations';
 import { replaceAndUpdate } from './replaceAndUpdate';
 import { getSuggestLangObj } from './lang';
-import { I18N_PATH_VERIFY_REGEXP } from './regexp';
+import { getI18nPathVerifyRegexp } from './regexp';
 import { getValFromConfiguration, getFastIntlConfigFile } from './config';
 import { findMatchKey } from './utils';
 import babelRegister from './babelRegister';
@@ -133,15 +133,20 @@ export function activate(context: vscode.ExtensionContext) {
           return resolve(args.varName);
         }
 
+        const mode = getValFromConfiguration('mode');
         return resolve(
           vscode.window.showInputBox({
             prompt:
-              "请输入变量名，格式 `I18N.get('page.key)`，按 <回车> 启动替换",
+              mode === 'single'
+                ? "请输入变量名，格式 `I18N.get('key)`，按 <回车> 启动替换"
+                : "请输入变量名，格式 `I18N.get('page.key)`，按 <回车> 启动替换",
             ignoreFocusOut: false,
             value: `I18N.get('')`,
             validateInput(input) {
-              if (!input.match(I18N_PATH_VERIFY_REGEXP)) {
-                return "变量名格式 `I18N.get('page.key')`，如 `I18N.get('common.app_title')`";
+              if (!input.match(getI18nPathVerifyRegexp())) {
+                return mode === 'single'
+                  ? "变量名格式 `I18N.get('key')`，如 `I18N.get('app_title')`"
+                  : "变量名格式 `I18N.get('page.key')`，如 `I18N.get('common.app_title')`";
               }
             },
           }),

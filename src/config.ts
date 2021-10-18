@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { compatESModuleRequire } from './utils';
-import { ROOT_DIR, I18N_GLOB } from './constants';
+import { ROOT_DIR } from './constants';
 
 /**
  * 获取 ftintl 配置文件 (cli 共用)
@@ -71,15 +71,5 @@ export function getCurrentProjectLangPath() {
     vscode.window.activeTextEditor?.document.uri.path as string,
   );
 
-  return `${targetLangPath}/${I18N_GLOB}`;
-}
-
-/**
- * 获取当前文件对应的语言路径
- */
-export function getLangPrefix() {
-  const langPrefix = getTargetLangPath(
-    vscode.window.activeTextEditor?.document.uri.path as string,
-  );
-  return langPrefix;
+  return targetLangPath;
 }

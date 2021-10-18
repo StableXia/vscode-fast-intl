@@ -1,3 +1,5 @@
+import { getValFromConfiguration } from './config';
+
 // 中文字符匹配
 export const CHINESE_CHAR_REGEXP = /[^\x00-\xff]/g;
 
@@ -11,5 +13,14 @@ export function pickPathFromI18NGet(str: string) {
   return str.match(I18N_PATH_REGEXP)?.[1];
 }
 
-// 自定义 path 校验
-export const I18N_PATH_VERIFY_REGEXP = /^I18N\.get\(["']\w+(\.\w+)+["']\)$/;
+/**
+ * 获取 path 校验正则
+ * @returns
+ */
+export function getI18nPathVerifyRegexp() {
+  const mode = getValFromConfiguration('mode');
+
+  return mode === 'single'
+    ? /^I18N\.get\(["']\w+(\.\w+)*["']\)$/
+    : /^I18N\.get\(["']\w+(\.\w+)+["']\)$/;
+}

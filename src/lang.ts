@@ -3,8 +3,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as globby from 'globby';
 import { flattenObj, compatESModuleRequire } from './utils';
-import { getCurrentProjectLangPath } from './config';
+import { getCurrentProjectLangPath, getValFromConfiguration } from './config';
 import babelRegister from './babelRegister';
+import { I18N_GLOB } from './constants';
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
@@ -15,7 +16,13 @@ export function getLangData(filePath: string) {
 }
 
 export function getI18N() {
-  const paths: string[] = globby.sync(getCurrentProjectLangPath());
+  const mode = getValFromConfiguration('mode');
+  const langPath = getCurrentProjectLangPath();
+
+  const paths: string[] =
+    mode === 'single'
+      ? [`${langPath}.ts`]
+      : globby.sync(`${langPath}/${I18N_GLOB}`);
 
   babelRegister.setOnlyMap({
     key: 'langPaths',
@@ -29,18 +36,16 @@ export function getI18N() {
       return prev;
     }
 
-    const fileContent = getLangData(curr);
-    let jsObj = fileContent;
-
-    if (Object.keys(jsObj).length === 0) {
-      vscode.window.showWarningMessage(
-        `\`${curr}\` 解析失败，该文件包含的文案无法自动补全`,
-      );
+    if (mode === 'single') {
+      return {
+        ...prev,
+        ...getLangData(curr),
+      };
     }
 
     return {
       ...prev,
-      [filename]: jsObj,
+      [filename]: getLangData(curr),
     };
   }, {});
 
