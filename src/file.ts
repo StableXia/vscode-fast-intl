@@ -48,9 +48,12 @@ function prettierFile(fileContent: string) {
 }
 
 export function generateNewLangFile(key: string, value: string) {
+  const langExt = getValFromConfiguration('langExt');
   const obj = _.set({}, key, value);
 
-  return prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
+  return langExt === 'json'
+    ? JSON.stringify(obj, null, 2)
+    : prettierFile(`export default ${JSON.stringify(obj, null, 2)}`);
 }
 
 export function updateLangFiles(
@@ -62,6 +65,7 @@ export function updateLangFiles(
     return;
   }
 
+  const langExt = getValFromConfiguration('langExt');
   const mode = getValFromConfiguration('mode');
   const langPath = getCurrentProjectLangPath();
 
@@ -71,7 +75,7 @@ export function updateLangFiles(
 
   if (mode === 'single') {
     fullKey = keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || '';
-    targetFilename = `${langPath}.ts`;
+    targetFilename = `${langPath}.${langExt}`;
   } else {
     const keyArr = (keyValue.match(/\(["']([\S]+)['"]\s*,?/)?.[1] || '').split(
       '.',

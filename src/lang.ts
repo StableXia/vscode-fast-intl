@@ -15,12 +15,13 @@ export function getLangData(filePath: string) {
 }
 
 export function getI18N() {
+  const langExt = getValFromConfiguration('langExt');
   const mode = getValFromConfiguration('mode');
   const langPath = getCurrentProjectLangPath();
 
   const paths: string[] =
     mode === 'single'
-      ? [`${langPath}.ts`]
+      ? [`${langPath}.${langExt}`]
       : globby.sync(`${langPath}/${I18N_GLOB}`);
 
   babelRegister.setOnlyMap({
