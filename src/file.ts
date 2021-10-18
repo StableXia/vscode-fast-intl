@@ -107,7 +107,9 @@ export function updateLangFiles(
 
     fs.writeFileSync(
       targetFilename,
-      prettierFile(`export default ${JSON.stringify(obj, null, 2)}`),
+      langExt === 'json'
+        ? JSON.stringify(obj, null, 2)
+        : prettierFile(`export default ${JSON.stringify(obj, null, 2)}`),
     );
   }
 }
