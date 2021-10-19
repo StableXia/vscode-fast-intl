@@ -11,7 +11,6 @@ export function getLangData(filePath: string) {
   } else {
     return {};
   }
-  return {};
 }
 
 export function getI18N() {
