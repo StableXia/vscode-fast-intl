@@ -10,8 +10,8 @@ export class Position {
 class Cache {
   memories: { code: string; positions: Position[] }[];
 
-  constructor(arr = []) {
-    this.memories = arr;
+  constructor() {
+    this.memories = [];
   }
 
   addCache(code: string, positions: Position[]) {
@@ -35,7 +35,7 @@ class Cache {
   }
 }
 
-const cache = new Cache([]);
+const cache = new Cache();
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function getRegexMatches(I18N: any, code: string) {

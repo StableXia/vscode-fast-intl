@@ -2,7 +2,11 @@ import { existsSync, realpathSync } from 'fs';
 import { winPath } from './utils';
 
 class BabelRegister {
-  only: Record<string, string[]> = {};
+  only: Record<string, string[]>;
+
+  constructor() {
+    this.only = {};
+  }
 
   setOnlyMap({ key, value }: { key: string; value: string[] }) {
     this.only[key] = value;
