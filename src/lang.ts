@@ -1,10 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import * as globby from 'globby';
 import { flattenObj, compatESModuleRequire } from './utils';
 import { getCurrentProjectLangPath, getValFromConfiguration } from './config';
 import babelRegister from './babelRegister';
-import { I18N_GLOB } from './constants';
+import { readFileSync } from './readDir';
 
 export function getLangData(filePath: string) {
   if (fs.existsSync(filePath)) {
@@ -12,6 +11,7 @@ export function getLangData(filePath: string) {
   } else {
     return {};
   }
+  return {};
 }
 
 export function getI18N() {
@@ -20,9 +20,7 @@ export function getI18N() {
   const langPath = getCurrentProjectLangPath();
 
   const paths: string[] =
-    mode === 'single'
-      ? [`${langPath}.${langExt}`]
-      : globby.sync(`${langPath}/${I18N_GLOB}`);
+    mode === 'single' ? [`${langPath}.${langExt}`] : readFileSync(langPath);
 
   babelRegister.setOnlyMap({
     key: 'langPaths',
