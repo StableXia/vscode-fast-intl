@@ -34,6 +34,14 @@
 			{
 				"command": "vscode-fast-intl.autoExtract",
 				"title": "Replace Chinese copy of current file"
+			},
+			{
+				"command": "vscode-fast-intl.openFastIntl",
+				"title": "Whether to enable Fast Intl"
+			},
+			{
+				"command": "vscode-fast-intl.createImportI18N",
+				"title": "Whether to import i18n"
 			}
 		],
 		"keybindings": [
@@ -46,6 +54,11 @@
 			  "command": "vscode-fast-intl.openFastIntl",
 			  "key": "cmd+ctrl+o",
 			  "mac": "cmd+ctrl+o"
+			},
+			{
+			  "command": "vscode-fast-intl.createImportI18N",
+			  "key": "cmd+ctrl+i",
+			  "mac": "cmd+ctrl+i"
 			}
 		],
 		"configuration": {

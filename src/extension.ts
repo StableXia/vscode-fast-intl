@@ -5,8 +5,9 @@ import { replaceAndUpdate } from './replaceAndUpdate';
 import { getSuggestLangObj } from './lang';
 import { getI18nPathVerifyRegexp } from './regexp';
 import { getValFromConfiguration, getFastIntlConfigFile } from './config';
-import { findMatchKey } from './utils';
+import { findMatchKey, writeFile } from './utils';
 import babelRegister from './babelRegister';
+import { hasImportI18N, createImportI18N } from './importI18n';
 
 export function activate(context: vscode.ExtensionContext) {
   const configPath = getFastIntlConfigFile();
@@ -186,6 +187,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   );
 
+  // 文档发生变化时重新检测当前文档中的中文文案
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (activeEditor && event.document === activeEditor.document) {
@@ -196,6 +198,7 @@ export function activate(context: vscode.ExtensionContext) {
     }, null),
   );
 
+  // 文档切换时重新检测当前文档中的中文文案
   context.subscriptions.push(
     vscode.window.onDidChangeActiveTextEditor((editor) => {
       activeEditor = editor;
@@ -261,6 +264,24 @@ export function activate(context: vscode.ExtensionContext) {
               });
           }
         });
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand('vscode-fast-intl.createImportI18N', () => {
+      try {
+        const { document } = vscode.window
+          .activeTextEditor as vscode.TextEditor;
+        if (hasImportI18N(document.uri.path)) {
+          vscode.window.showInformationMessage('已经导入过 I18N');
+        } else {
+          const code = createImportI18N(document.uri.path);
+          writeFile(document.uri.path, code || '');
+          vscode.window.showInformationMessage('I18N 导入成功');
+        }
+      } catch (err: any) {
+        vscode.window.showErrorMessage(err.message);
+      }
     }),
   );
 }
