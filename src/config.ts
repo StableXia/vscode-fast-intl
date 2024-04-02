@@ -1,38 +1,41 @@
-import * as vscode from "vscode";
-import * as fs from "fs";
-import * as path from "path";
-import { getFileToJson } from "./utils";
+import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
+import { compatESModuleRequire } from './utils';
+import { ROOT_DIR } from './constants';
 
 /**
- * 获取 ftintl 配置文件 (cli)
+ * 获取 ftintl 配置文件 (cli 共用)
  */
-export const getFtintlConfigFile = () => {
-  let ftintlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.ftintlrc.js`;
+export const getFastIntlConfigFile = () => {
+  let configPath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.ftintlrc.js`;
 
-  // 先找js
-  if (!fs.existsSync(ftintlConfigJson)) {
-    ftintlConfigJson = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.ftintlrc.ts`;
-    //再找ts
-    if (!fs.existsSync(ftintlConfigJson)) {
+  if (!fs.existsSync(configPath)) {
+    configPath = `${vscode.workspace.workspaceFolders?.[0].uri.path}/.ftintlrc.ts`;
+
+    if (!fs.existsSync(configPath)) {
       return null;
     }
   }
 
-  return ftintlConfigJson;
+  return configPath;
 };
 
 /**
  * 获取配置，支持从vscode和配置文件(优先)中取到配置项
  */
 export function getValFromConfiguration(key: string) {
-  let value = vscode.workspace.getConfiguration("vscode-fast-intl").get(key) as string;
+  let value = vscode.workspace
+    .getConfiguration('vscode-fast-intl')
+    .get(key) as string;
 
-  let ftintlConfigJson = getFtintlConfigFile();
-  if (!ftintlConfigJson) {
+  let configPath = getFastIntlConfigFile();
+  if (!configPath) {
     return value;
   }
 
-  const config = getFileToJson(ftintlConfigJson);
+  const config = compatESModuleRequire(require(configPath));
+
   if (key in config) {
     value = config[key];
   }
@@ -40,9 +43,33 @@ export function getValFromConfiguration(key: string) {
   return value;
 }
 
-/**
- * 获取中文语言文件路径
- */
-export function getZhHansLangPath() {
-  return path.resolve(vscode.workspace.workspaceFolders?.[0].uri.path as string, getValFromConfiguration("ZHHans"));
+export function getTargetLangPath(currentFilePath: string) {
+  let targetLangPath = path.resolve(
+    ROOT_DIR,
+    getValFromConfiguration('langDir'),
+    getValFromConfiguration('defaultLang'),
+  );
+
+  const projects: any = getValFromConfiguration('projects') || [];
+
+  for (const config of projects) {
+    if (currentFilePath.indexOf(`/${config.target}/`) > -1) {
+      targetLangPath = path.resolve(
+        ROOT_DIR,
+        config.langDir,
+        config.defaultLang,
+      );
+      return targetLangPath;
+    }
+  }
+
+  return targetLangPath;
+}
+
+export function getCurrentProjectLangPath() {
+  const targetLangPath = getTargetLangPath(
+    vscode.window.activeTextEditor?.document.uri.path as string,
+  );
+
+  return targetLangPath;
 }

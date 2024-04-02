@@ -1,5 +1,5 @@
-import * as _ from "lodash";
-import { getI18N } from "./lang";
+import * as _ from 'lodash';
+import { getI18N } from './lang';
 
 export class Position {
   start: any;
@@ -8,7 +8,11 @@ export class Position {
 }
 
 class Cache {
-  memories = [] as Array<{ code: string; positions: Position[] }>;
+  memories: { code: string; positions: Position[] }[];
+
+  constructor() {
+    this.memories = [];
+  }
 
   addCache(code: string, positions: Position[]) {
     this.memories.push({
@@ -35,7 +39,7 @@ const cache = new Cache();
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
 function getRegexMatches(I18N: any, code: string) {
-  const lines = code.split("\n");
+  const lines = code.split('\n');
   const positions: Position[] = [];
   const reg = /I18N\.get\(["'](\w+(\.\w+)*)['"]\s*[,)]/;
   const normalReg = /I18N\.get\(["'](\w+(\.\w+)*)['"]\s*[,)]/;
@@ -50,19 +54,19 @@ function getRegexMatches(I18N: any, code: string) {
 
     if (exps) {
       exps = exps.trim();
-      exps = exps.split("}")[0];
-      exps = exps.split(")")[0];
-      exps = exps.split(",")[0];
-      exps = exps.split(";")[0];
+      exps = exps.split('}')[0];
+      exps = exps.split(')')[0];
+      exps = exps.split(',')[0];
+      exps = exps.split(';')[0];
       exps = exps.split('"')[0];
       exps = exps.split("'")[0];
-      exps = exps.split(" ")[0];
+      exps = exps.split(' ')[0];
 
       const code = `I18N.${exps}`;
       const position = new Position();
-      const transformedCn = _.get(I18N, exps.split("."));
+      const transformedCn = _.get(I18N, exps.split('.'));
 
-      if (typeof transformedCn === "string") {
+      if (typeof transformedCn === 'string') {
         position.cn = transformedCn;
         (position as any).line = index;
         position.code = code;

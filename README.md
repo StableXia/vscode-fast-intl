@@ -18,6 +18,12 @@
 
 当前文件的的公共文案替换，只会替换在中文语言文件中可以找到的文案。
 
+#### openFastIntl
+
+快捷键：cmd+ctrl+o
+
+是否开启 faset-intl。
+
 ### demo
 
 ![image](https://github.com/xiaotangdou/vscode-fast-intl/blob/master/demo.gif)

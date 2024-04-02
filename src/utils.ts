@@ -1,16 +1,17 @@
-import * as fs from "fs-extra";
-import * as ts from "typescript";
-import * as vscode from "vscode";
-import * as _ from "lodash";
+/* eslint-disable @typescript-eslint/naming-convention */
+import * as fs from 'fs-extra';
+import * as ts from 'typescript';
+import * as vscode from 'vscode';
+import * as _ from 'lodash';
 
 export function flattenObj(obj: { [key: string]: any }, prefix?: string) {
-  const propName = prefix ? prefix + "." : "";
+  const propName = prefix ? prefix + '.' : '';
   const ret: { [key: string]: string } = {};
 
   for (let attr in obj) {
     if (_.isArray(obj[attr])) {
-      ret[attr] = obj[attr].join(",");
-    } else if (typeof obj[attr] === "object") {
+      ret[attr] = obj[attr].join(',');
+    } else if (typeof obj[attr] === 'object') {
       _.extend(ret, flattenObj(obj[attr], propName + attr));
     } else {
       ret[propName + attr] = obj[attr];
@@ -20,37 +21,27 @@ export function flattenObj(obj: { [key: string]: any }, prefix?: string) {
 }
 
 /**
- * 获取文件内容并转成json
- */
-export function getFileToJson(filePath: string) {
-  let temp: { [key: string]: any } = {};
-
-  try {
-    const fileContent = fs.readFileSync(filePath, { encoding: "utf8" });
-
-    let obj = fileContent.match(/export\s*default\s*({[\s\S]+);?$/)?.[1] as string;
-    obj = obj.replace(/\s*;\s*$/, "");
-
-    temp = eval("(" + obj + ")");
-  } catch (err) {
-    console.error(err);
-  }
-
-  return temp;
-}
-
-/**
  * 移除注释
  */
 export function removeFileComment(code: string, fileName: string) {
   const printer: ts.Printer = ts.createPrinter({ removeComments: true });
-  const sourceFile: ts.SourceFile = ts.createSourceFile("", code, ts.ScriptTarget.ES2015, true, fileName.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  const sourceFile: ts.SourceFile = ts.createSourceFile(
+    '',
+    code,
+    ts.ScriptTarget.ES2015,
+    true,
+    fileName.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.TS,
+  );
 
   return printer.printFile(sourceFile);
 }
 
-export function trimWhiteSpace(code: string, startPos: vscode.Position, endPos: vscode.Position) {
-  const lines = code.split("\n");
+export function trimWhiteSpace(
+  code: string,
+  startPos: vscode.Position,
+  endPos: vscode.Position,
+) {
+  const lines = code.split('\n');
   const hasContentLines = [];
   const columnOfLine: { [key: string]: [number, number] } = {};
   for (let i = startPos.line; i <= endPos.line; i++) {
@@ -96,7 +87,7 @@ export function findMatchKey(langObj: { [key: string]: string }, val: string) {
 
 export function readFile(filePath: string) {
   if (fs.existsSync(filePath)) {
-    return fs.readFileSync(filePath, "utf-8");
+    return fs.readFileSync(filePath, 'utf-8');
   }
 }
 
@@ -104,4 +95,41 @@ export function writeFile(filePath: string, file: string) {
   if (fs.existsSync(filePath)) {
     fs.writeFileSync(filePath, file);
   }
+}
+
+/**
+ * 获取文件内容并转成json
+ */
+export function getFileToJson(filePath: string) {
+  let temp: { [key: string]: any } = {};
+
+  try {
+    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
+
+    let obj = fileContent.match(
+      /export\s*default\s*({[\s\S]+);?$/,
+    )?.[1] as string;
+    obj = obj.replace(/\s*;\s*$/, '');
+
+    temp = eval('(' + obj + ')');
+  } catch (err) {
+    console.error(err);
+  }
+
+  return temp;
+}
+
+export function compatESModuleRequire<
+  T extends { __esModule: boolean; default: any }
+>(m: T): T extends { __esModule: true; default: infer U } ? U : T {
+  return m.__esModule ? m.default : m;
+}
+
+export function winPath(path: string) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+  if (isExtendedLengthPath) {
+    return path;
+  }
+
+  return path.replace(/\\/g, '/');
 }
