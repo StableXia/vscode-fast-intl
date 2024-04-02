@@ -2,12 +2,13 @@
 	"name": "vscode-fast-intl",
 	"displayName": "vscode-fast-intl",
 	"description": "intl fast vscode",
-	"version": "0.0.4",
+	"version": "2.1.0",
 	"publisher": "xiawen",
 	"icon": "app-logo.jpg",
 	"engines": {
 		"vscode": "^1.51.0"
 	},
+  "license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/xiaotangdou/vscode-fast-intl"
@@ -33,6 +34,14 @@
 			{
 				"command": "vscode-fast-intl.autoExtract",
 				"title": "Replace Chinese copy of current file"
+			},
+			{
+				"command": "vscode-fast-intl.openFastIntl",
+				"title": "Whether to enable Fast Intl"
+			},
+			{
+				"command": "vscode-fast-intl.createImportI18N",
+				"title": "Whether to import i18n"
 			}
 		],
 		"keybindings": [
@@ -40,16 +49,31 @@
 			  "command": "vscode-fast-intl.autoExtract",
 			  "key": "cmd+ctrl+r",
 			  "mac": "cmd+ctrl+r"
+			},
+			{
+			  "command": "vscode-fast-intl.openFastIntl",
+			  "key": "cmd+ctrl+o",
+			  "mac": "cmd+ctrl+o"
+			},
+			{
+			  "command": "vscode-fast-intl.createImportI18N",
+			  "key": "cmd+ctrl+i",
+			  "mac": "cmd+ctrl+i"
 			}
 		],
 		"configuration": {
 			"type": "object",
 			"title": "Fast Intl",
 			"properties": {
-				"vscode-fast-intl.ZHHans": {
-					"type": "string",
-					"default": ".fastIntl/zh-hans.json",
-					"description": "默认存储中文文件路径"
+        "vscode-fast-intl.openFastIntl": {
+					"type": "boolean",
+					"default": true,
+					"description": "是否开启 Fast Intl"
+				},
+				"vscode-fast-intl.langPrefix": {
+          "type": "string",
+          "default": ".fastIntl/zh-hans/",
+          "description": "语言默认存储路径"
 				},
 				"vscode-fast-intl.enableReplaceSuggestion": {
 					"type": "boolean",
@@ -85,6 +109,10 @@
 		"vscode-test": "^1.4.1"
 	},
 	"dependencies": {
+    "@babel/core": "^7.15.8",
+    "@babel/preset-env": "^7.15.8",
+    "@babel/preset-typescript": "^7.15.0",
+    "@babel/register": "^7.15.3",
 		"@types/fs-extra": "^9.0.6",
 		"@types/lodash": "^4.14.168",
 		"@types/prettier": "^2.1.6",
